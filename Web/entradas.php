@@ -24,30 +24,54 @@
 ================================================== -->
 <body>
 <?php
-if(isset($_POST['comentario'])){
-
-}
-
-
 // date_default_timezone... es obligatorio si usais PHP 5.3 o superior
 date_default_timezone_set('Europe/Madrid');
 $fecha_actual = date("Y-m-d H:i:s");
 
+if (isset($_POST['enviar'])) {
+
+// Recoger los valores
+    $titulo = "";
+    if (isset($_POST['titulo']))
+        $titulo = $_POST['titulo'];
+
+    $texto = "";
+    if (isset($_POST['texto']))
+        $texto = $_POST['texto'];
+
+    $fecha = $fecha_actual;
+    if (isset($_POST['fecha']) && $_POST['fecha'] != "")
+        $fecha = $_POST['fecha'];
+
+    $activo = 0;
+    if (isset($_POST['activo']))
+        $activo = 1;
+
+
 // Abrir la conexión
-$conexion = mysqli_connect("localhost", "root", "root", "blog");
+    $conexion = mysqli_connect("localhost", "root", "root", "blog");
+
+// Formar la consulta (insertar una fila)
+
+    /*
+      Escribir la consulta
+
+        $q = "insert into entrada values( 0, '', '', '', '' )";
+
+      Cortar en los puntos en los que queremos introducir variables con ".."
+
+        $q = "insert into entrada values( 0, '".$titulo."', '".$texto."', '".$fecha."', '".$activo."' )";
+    */
+
+    $q = "insert into entrada values ( 0,'" . $titulo . "','" . $texto . "','" . $fecha . "','" . $activo . "' )";
 
 
-// Formar la consulta (seleccionando todas las filas)
-$q = "select * from entrada";
+    // Ejecutar la consulta en la conexión abierta. No hay "resultset"
+    mysqli_query($conexion, $q) or die(mysqli_error($conexion));
 
-// Ejecutar la consulta en la conexión abierta y obtener el "resultset" o abortar y mostrar el error
-$r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
-
-// Calcular el número de filas
-$total = mysqli_num_rows($r);
-//seguimos mas abajo
-
-
+// Cerrar la conexión
+    mysqli_close($conexion);
+}
 ?>
 <!-- Barra de navegación -->
 <div class="navbar-wrapper">
@@ -55,7 +79,7 @@ $total = mysqli_num_rows($r);
         <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-tarPOST="#navbar"
                             aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
@@ -91,41 +115,40 @@ $total = mysqli_num_rows($r);
 <!-- FEATURETTES -->
 
 <hr class="featurette-divider" class="divider-oculto">
-<?php
-// Mostrar el contenido de las filas, creando una tabla XHTML
-if ($total > 0) {
-    while ($fila = mysqli_fetch_assoc($r)) {
-        if ($fila['activo'] == 1) {
-            echo '
-    
-    <a name="entrada blog"></a>
-    <div class="row featurette">
-        <div class="col-md-12">
-        <h2 class="featurette-heading">' . $fila['titulo'] . ' </h2>
-        <span class="text-muted" class="fecha">' . $fila['fecha'] . '</span>       
-        <p >' . $fila['texto'] . '</p>
-        </div>
-    </div>
-<div class="col-md-4">
-    <form action="blog.php" method="post">
-            <div class="col-md-4 text-center">             
-                <input role="button" type="submit" id="comentario" name="comentario" value="Añadir comentario"/>
+
+
+<a name="form entrada"></a>
+<div class="row featurette">
+    <div class="col-md-12">
+        <h2 class="featurette-heading">Añadir entrada <span class="text-muted">al Blog</span>
+        </h2>
+        <form action="entradas.php" method="post">
+            <div>
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" value=""/>
             </div>
-    </form>
+            <div>
+                <label for="texto">Texto:</label>
+                <textarea id="texto" name="texto" rows="4" cols="40"></textarea>
+            </div>
+            <div>
+                <label for="fecha">Fecha:</label>
+                <input type="text" id="fecha" name="fecha" value="<?php echo $fecha_actual; ?>"/>
+            </div>
+            <div>
+                <label for="activo">Activo:</label>
+                <input type="checkbox" id="activo" name="activo" checked="checked"/>
+            </div>
+            <div>
+                <input type="reset" id="limpiar" name="limpiar" value="Limpiar"/>
+                <input type="submit" id="enviar" name="enviar" value="Guardar"/>
+            </div>
+        </form>
+    </div>
 
 </div>
 
-
 <hr class="featurette-divider">
-       
-    ';
-        }
-    }
-}
-// Cerrar la conexión
-mysqli_close($conexion);
-?>
-
 
 <!-- /Fin de las FEATURETTES -->
 

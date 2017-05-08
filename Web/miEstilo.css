@@ -7,9 +7,10 @@ body{
 hr{
     border-color: #0f0f0f;
 }
-hr, .divider-oculto{
+.divider-oculto{
     border-color: transparent;
 }
+
 .icon-social-github{
 
     font-size: 80px;
