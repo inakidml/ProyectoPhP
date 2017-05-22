@@ -142,7 +142,7 @@ if (isset($_POST['enviar'])) {
                 <div class="form-group">
                     <label for="texto" class="control-label col-sm-2">Texto:</label>
                     <div class="col-sm-10">
-                        <textarea id="texto" name="texto" rows="4" cols="40" class="form-control"></textarea>
+                        <textarea id="texto" name="texto" rows="4" cols="40" maxlength="500" placeholder="max: 500dig" class="form-control"></textarea>
                     </div>
                 </div>
                 <div class="form-group">

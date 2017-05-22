@@ -131,9 +131,8 @@ if ($total > 0) {
 
     //número de páginas
     if ($total > 0) {
-
-        $paginas = (int) ($total / 5);//ojo division con decimales da float
-        if ($paginas % 5 != 0) {
+        $paginas = (int) ($contador / 5);//ojo division con decimales da float
+        if ($contador % 5 != 0) {
             $paginas++;
         }
         echo '

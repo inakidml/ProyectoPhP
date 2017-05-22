@@ -97,10 +97,10 @@ if (isset($_POST['enviar'])) {
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li class="active"><a href="blog.php">Ver Blog</a></li>
+                                <li ><a href="blog.php">Ver Blog</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
-                                <li><a href="entradas.php">Gestión blog</a></li>
+                                <li class="active"><a href="entradas.php">Gestión blog</a></li>
                                 <li><a href="#">Añadir usuarios</a></li>
                             </ul>
                         </li>
@@ -138,7 +138,7 @@ if (isset($_POST['enviar'])) {
                 <div class="form-group">
                     <label for="texto" class="control-label col-sm-2">Texto:</label>
                     <div class="col-sm-10">
-                        <textarea id="texto" name="texto" rows="4" cols="40" class="form-control"></textarea>
+                        <textarea id="texto" name="texto" rows="4" cols="40" maxlength="2000" placeholder="max: 2000dig" class="form-control"></textarea>
                     </div>
                 </div>
                 <div class="form-group">
@@ -167,6 +167,15 @@ if (isset($_POST['enviar'])) {
 </div>
 
 <hr class="featurette-divider">
+
+
+<div class="container">
+    <div class="col-md-12 text-center">
+        <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php" role="button">Borrar entradas</a></p>
+    </div>
+</div>
+
+<hr class="featurette-divider">//divisor de la entrada
 
 <!-- /Fin de las FEATURETTES -->
 
