@@ -24,6 +24,9 @@
 ================================================== -->
 <body>
 <?php
+if (isset($_GET['idEntrada'])) {
+    $idEntrada = $_GET['idEntrada'];
+}
 // date_default_timezone... es obligatorio si usais PHP 5.3 o superior
 date_default_timezone_set('Europe/Madrid');
 $fecha_actual = date("Y-m-d H:i:s");
@@ -32,8 +35,8 @@ if (isset($_POST['enviar'])) {
 
 // Recoger los valores
     $titulo = "";
-    if (isset($_POST['titulo']))
-        $titulo = $_POST['titulo'];
+    if (isset($_POST['email']))
+        $email = $_POST['email'];
 
     $texto = "";
     if (isset($_POST['texto']))
@@ -42,6 +45,9 @@ if (isset($_POST['enviar'])) {
     $fecha = $fecha_actual;
     if (isset($_POST['fecha']) && $_POST['fecha'] != "")
         $fecha = $_POST['fecha'];
+
+    if (isset($_POST['idEntrada']))
+        $idEntrada = $_POST['idEntrada'];
 
     $activo = 0;
     if (isset($_POST['activo']))
@@ -63,7 +69,7 @@ if (isset($_POST['enviar'])) {
         $q = "insert into entrada values( 0, '".$titulo."', '".$texto."', '".$fecha."', '".$activo."' )";
     */
 
-    $q = "insert into entrada values ( 0,'" . $titulo . "','" . $texto . "','" . $fecha . "','" . $activo . "' )";
+    $q = "insert into comentario values ( 0,'" . $email . "','" . $texto . "','" . $fecha . "','" . $activo . "' ,'" . $idEntrada . "')";
 
 
     // Ejecutar la consulta en la conexión abierta. No hay "resultset"
@@ -71,6 +77,9 @@ if (isset($_POST['enviar'])) {
 
 // Cerrar la conexión
     mysqli_close($conexion);
+    header("Location: comentarios.php?idEntrada=$idEntrada");
+    exit;
+
 }
 ?>
 <!-- Barra de navegación -->
@@ -120,19 +129,14 @@ if (isset($_POST['enviar'])) {
 <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
-
         <div class="container">
-
-            <h2 class="featurette-heading">Añadir entrada <span class="text-muted">al Blog</span>
+            <h2 class="featurette-heading">Añadir cometario <span class="text-muted">a la entrada</span>
             </h2>
-
-            <form action="entradas.php" method="post" class="form-horizontal">
+            <form action="comentarios.php" method="post" class="form-horizontal">
                 <div class="form-group">
-                    <label for="titulo" class="control-label col-sm-2">Título:</label>
+                    <label for="email" class="control-label col-sm-2">Email:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="titulo" name="titulo" class="form-control" class="form-horizontal"
-                               value=""/>
-
+                        <input type="email" id="email" name="email" value="" class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -144,8 +148,8 @@ if (isset($_POST['enviar'])) {
                 <div class="form-group">
                     <label for="fecha" class="control-label col-sm-2">Fecha:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="fecha" name="fecha" class="form-control"
-                               value="<?php echo $fecha_actual; ?>"/>
+                        <input type="text" id="fecha" name="fecha" value="<?php echo $fecha_actual; ?>"
+                               class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -154,11 +158,22 @@ if (isset($_POST['enviar'])) {
                         <input type="checkbox" id="activo" name="activo" checked="checked" class="form-control"/>
                     </div>
                 </div>
+                <?
+                if (isset($_GET['idEntrada'])) {
+                    if ($_GET['idEntrada']) {
+                        echo '    
+            <div class="form-group">
+                <input type="text" id="idEntrada" name="idEntrada" hidden value="' . $idEntrada . '">
+            </div>';
+                    }
+                } ?>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                    <input type="reset" id="limpiar" name="limpiar" value="Limpiar" class="btn btn-default" class="form-inline"/>
-                    <input type="submit" id="enviar" name="enviar" value="Guardar" class="btn btn-default" class="form-inline"/>
-                </div>
+                        <input type="reset" id="limpiar" name="limpiar" value="Limpiar" class="btn btn-default"
+                               class="form-inline"/>
+                        <input type="submit" id="enviar" name="enviar" value="Guardar" class="btn btn-default"
+                               class="form-inline"/>
+                    </div>
                 </div>
             </form>
         </div>

@@ -19,38 +19,37 @@
     <!-- Custom styles for this template -->
     <link href="carousel.css" rel="stylesheet">
     <link href="miEstilo.css" rel="stylesheet">
-    <link href="miEstiloParrafos.css" rel="stylesheet">
 </head>
 <!-- NAVBAR
 ================================================== -->
 <body>
 <?php
-$pagina = 1;
-if (isset($_GET['pagina'])) {
-    $pagina = $_GET['pagina'];
-    if($pagina==0){
-        $pagina = 1;
-    }
-}
+
+if (isset($_GET['idEntrada'])) {
+    $idEntrada = $_GET['idEntrada'];
 
 
 // date_default_timezone... es obligatorio si usais PHP 5.3 o superior
-date_default_timezone_set('Europe/Madrid');
-$fecha_actual = date("Y-m-d H:i:s");
+    date_default_timezone_set('Europe/Madrid');
+    $fecha_actual = date("Y-m-d H:i:s");
 
 // Abrir la conexión
-$conexion = mysqli_connect("localhost", "root", "root", "blog");
+    $conexion = mysqli_connect("localhost", "root", "root", "blog");
 
 
 // Formar la consulta (seleccionando todas las filas)
-$q = "select * from entrada";
+    $q = "select * from entrada WHERE id= '$idEntrada'";
 
 // Ejecutar la consulta en la conexión abierta y obtener el "resultset" o abortar y mostrar el error
-$r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
+    $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
 
 // Calcular el número de filas
-$total = mysqli_num_rows($r);
+    $total = mysqli_num_rows($r);
 
+    $qComen = "SELECT * from comentario WHERE entrada_id='$idEntrada'";
+    $rComen = mysqli_query($conexion, $qComen) or die (mysqli_error($conexion));
+    $totalComen = mysqli_num_rows($rComen);
+}
 //seguimos mas abajo
 
 
@@ -98,86 +97,54 @@ $total = mysqli_num_rows($r);
 
 <hr class="featurette-divider" class="divider-oculto">
 <?php
-
-//5 articulos por página
-
+// Mostrar el contenido de las filas, creando una tabla XHTML
 if ($total > 0) {
-    $contador = 0;
     while ($fila = mysqli_fetch_assoc($r)) {
-
         if ($fila['activo'] == 1) {
-
-            if ($contador < $pagina * 5 && $contador >= ($pagina - 1) * 5) {
-                echo '
+            echo '
+    
     <a name="entrada blog"></a>
     <div class="row featurette">
         <div class="col-md-12">
-        <h2 class="featurette-heading"><a href="entradaComentarios.php?idEntrada=' . $fila['id'] . '">' . $fila['titulo'] . ' </a></h2><!--Paso el id como get en el link -->
+        <h2 class="featurette-heading"><a href="entradaComentarios.php?idEntrada=' . $fila['id'] . '">' . $fila['titulo'] . ' </a></h2>
         <span class="text-muted" class="fecha">' . $fila['fecha'] . '</span>       
         <p >' . $fila['texto'] . '</p>
         </div>
-    </div>
-   
-</div>
+    </div>';
+            echo '<hr class="featurette-divider">';//divisor de la entrada
+            if ($totalComen > 0) {
+                echo '<div class="col-md-12 text-center">
+                <h2 class="featurette-heading" class> COMENTARIOS</h2>
+                </div>';
+                while ($filaComen = mysqli_fetch_assoc($rComen)) {
 
-
-<hr class="featurette-divider">
-       
-    ';
+                    echo ' 
+        <div>
+            <hr class="featurette-divider">
+             <div class="col-md-12">
+        <h2>' . $filaComen['email'] . ' </h2>
+        <span class="text-muted" class="fecha">' . $filaComen['fecha'] . '</span>       
+        <p >' . $filaComen['texto'] . '</p>
+        </div>
+        </div>
+                        ';
+                }
             }
-            $contador++;
+
+            echo '<hr class="featurette-divider">';
+
+            echo '
+            <div class="container">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <p><a class="btn btn-lg btn-primary" href="comentarios.php?idEntrada=' . $idEntrada . '" role="button">Añadir comentario</a></p>
+                </div>
+            </div>
+';
+            echo '<hr class="featurette-divider">';//divisor de la entrada
+
+
         }
     }
-
-    //número de páginas
-    if ($total > 0) {
-
-        $paginas = (int) ($total / 5);//ojo division con decimales da float
-        if ($paginas % 5 != 0) {
-            $paginas++;
-        }
-        echo '
-
-<!--//indicadores de paginación -->
-
-<div class="col-md-12 text-center">
-
-
-
-    <nav aria-label="Page navigation">
-  <ul class="pagination">
-    <li>
-      <a href="blog.php?pagina=' . ($pagina-1) . '" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>';
-
-        for ($i = 1; $i <= $paginas; $i++) {
-            echo '<li ';
-            if ($pagina == $i) {
-                echo 'class="active"';
-            }
-            echo '><a href="blog.php?pagina=' . $i . '">' . $i . '</a></li>';
-        }
-        echo '
-    <li>
-      <a href="';
-        if($pagina >= $paginas){
-            echo'#';
-        }else{
-            echo'blog.php?pagina='.($pagina + 1).'';
-        }
-        echo '" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-</div>
-}
-    ';
-    }
-
 }
 // Cerrar la conexión
 mysqli_close($conexion);
@@ -216,11 +183,3 @@ mysqli_close($conexion);
 </body>
 </html>
 
-
-<!--
-    <li class="active"><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li class="disabled"><a href="#">5</a></li>
--->

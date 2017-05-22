@@ -1,0 +1,9 @@
+p{
+
+    max-height: 200px;
+    overflow : hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+
+}

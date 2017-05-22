@@ -263,7 +263,7 @@ Contenedor marketing, dos columnas de texto y las featurettes
     <div class="row featurette">
         <div class="col-md-4"></div>
         <div class="col-md-4 text-center" class="github" >
-    <p><a class="icon-social-github" href="https://github.com/inakidml/Proyecto-CSS" role="button"></a></p>
+    <p><a class="icon-social-github" href="https://github.com/inakidml/ProyectoPhP" role="button"></a></p>
         </div>
         <div clas="col-md-4"></div>
 </div>
