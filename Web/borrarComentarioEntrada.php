@@ -19,48 +19,37 @@
     <!-- Custom styles for this template -->
     <link href="carousel.css" rel="stylesheet">
     <link href="miEstilo.css" rel="stylesheet">
-    <link href="miEstiloParrafos.css" rel="stylesheet">
 </head>
 <!-- NAVBAR
 ================================================== -->
 <body>
 <?php
-$pagina = 1;
-if (isset($_GET['pagina'])) {
-    $pagina = $_GET['pagina'];
-    if ($pagina == 0) {
-        $pagina = 1;
-    }
-}
 
-if (isset($_GET['borrar'])) {
-    $idBorrar = $_GET['borrar'];
-// Abrir la conexión
-    $conexion = mysqli_connect("localhost", "root", "root", "blog");
-    $q = "delete from comentario where entrada_id = $idBorrar";
-    $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
-    $q = "delete from entrada where id = $idBorrar";
-    $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
-}
+if (isset($_GET['idEntrada'])) {
+    $idEntrada = $_GET['idEntrada'];
 
 
 // date_default_timezone... es obligatorio si usais PHP 5.3 o superior
-date_default_timezone_set('Europe/Madrid');
-$fecha_actual = date("Y-m-d H:i:s");
+    date_default_timezone_set('Europe/Madrid');
+    $fecha_actual = date("Y-m-d H:i:s");
 
 // Abrir la conexión
-$conexion = mysqli_connect("localhost", "root", "root", "blog");
+    $conexion = mysqli_connect("localhost", "root", "root", "blog");
 
 
 // Formar la consulta (seleccionando todas las filas)
-$q = "select * from entrada";
+    $q = "select * from entrada WHERE id= '$idEntrada'";
 
 // Ejecutar la consulta en la conexión abierta y obtener el "resultset" o abortar y mostrar el error
-$r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
+    $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
 
 // Calcular el número de filas
-$total = mysqli_num_rows($r);
+    $total = mysqli_num_rows($r);
 
+    $qComen = "SELECT * from comentario WHERE entrada_id='$idEntrada'";
+    $rComen = mysqli_query($conexion, $qComen) or die (mysqli_error($conexion));
+    $totalComen = mysqli_num_rows($rComen);
+}
 //seguimos mas abajo
 
 
@@ -108,90 +97,54 @@ $total = mysqli_num_rows($r);
 
 <hr class="featurette-divider" class="divider-oculto">
 <?php
-
-//5 articulos por página
-
+// Mostrar el contenido de las filas, creando una tabla XHTML
 if ($total > 0) {
-    $contador = 0;
     while ($fila = mysqli_fetch_assoc($r)) {
-
         if ($fila['activo'] == 1) {
-
-            if ($contador < $pagina * 5 && $contador >= ($pagina - 1) * 5) {
-                echo '
+            echo '
+    <div class="container">
     <a name="entrada blog"></a>
-    <div class="row featurette">
-        <div class="col-md-12">
-        <h2 class="featurette-heading"><a href="borrarComentarioEntrada.php?idEntrada=' . $fila['id'] . '">' . $fila['titulo'] . ' </a></h2><!--Paso el id como get en el link -->
-        <span class="text-muted" class="fecha">' . $fila['fecha'] . '</span>       
-        <p >' . $fila['texto'] . '</p>
-        </div>
-        
-        <div class="container">
-            <div class="col-md-12 text-center">
-                <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php?borrar='.$fila['id'].'" role="button">Borrar entrada</a></p>
+        <div class="hero-unit">
+            <div class="col-md-12">
+            <h1><a href="entradaComentarios.php?idEntrada=' . $fila['id'] . '">' . $fila['titulo'] . ' </a></h1>
+            <span class="text-muted" class="fecha">' . $fila['fecha'] . '</span>       
+            <p>' . $fila['texto'] . '</p>
             </div>
-        </div>
-    </div>
-   
+        </div>';
+            echo '<hr class="divider">';//divisor de la entrada
+            if ($totalComen > 0) {
+                echo '
+                <div class="col-md-12 text-center">
+                <hr class="divider"> 
+                    <h2 class="texto-naranja"> COMENTARIOS</h2>
+                
+                        <div class="col-md-12">';
+                while ($filaComen = mysqli_fetch_assoc($rComen)) {
 
-<hr class="featurette-divider">
-       
-    ';
+                    echo ' 
+                    <hr class="divider">                       
+                            <h2>' . $filaComen['email'] . ' </h2>
+                            <span class="text-muted" class="fecha">' . $filaComen['fecha'] . '</span>       
+                            <p>' . $filaComen['texto'] . '</p>
+                       <div class="container">
+                <div class="col-md-12 text-center">
+                    <p><a class="btn btn-lg btn-primary" href="borrarComentarioEntrada.php?borrarComentario=' . $filaComen['id'] . '" role="button">Borrar comentario</a></p>
+                </div>
+            </div>
+                        ';
+                }
+                echo'
+                            <hr class="divider"> 
+                        </div>
+                </div>
+    </div>';
             }
-            $contador++;
+
+            echo '<hr class="featurette-divider">';
+
+
         }
     }
-
-    //número de páginas
-    if ($total > 0) {
-
-        $paginas = (int)($contador / 5);//ojo division con decimales da float
-        if ($contador % 5 != 0) {
-            $paginas++;
-        }
-        echo '
-
-<!--//indicadores de paginación -->
-
-<div class="col-md-12 text-center">
-
-
-
-    <nav aria-label="Page navigation">
-  <ul class="pagination">
-    <li>
-      <a href="borrarEntradas.php?pagina=' . ($pagina - 1) . '" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>';
-
-        for ($i = 1; $i <= $paginas; $i++) {
-            echo '<li ';
-            if ($pagina == $i) {
-                echo 'class="active"';
-            }
-            echo '><a href="borrarEntradas.php?pagina=' . $i . '">' . $i . '</a></li>';
-        }
-        echo '
-    <li>
-      <a href="';
-        if ($pagina >= $paginas) {
-            echo '#';
-        } else {
-            echo 'blog.php?pagina=' . ($pagina + 1) . '';
-        }
-        echo '" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-</div>
-}
-    ';
-    }
-
 }
 // Cerrar la conexión
 mysqli_close($conexion);
