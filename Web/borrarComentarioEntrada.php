@@ -25,6 +25,26 @@
 <body>
 <?php
 
+if (isset($_GET['borrarComentario'])) {
+    $idComentarioBorrar = $_GET['borrarComentario'];
+
+
+// date_default_timezone... es obligatorio si usais PHP 5.3 o superior
+    date_default_timezone_set('Europe/Madrid');
+    $fecha_actual = date("Y-m-d H:i:s");
+
+// Abrir la conexión
+    $conexion = mysqli_connect("localhost", "root", "root", "blog");
+
+
+// Formar la consulta (seleccionando todas las filas)
+    $q = "delete from comentario WHERE id= '$idComentarioBorrar'";
+
+// Ejecutar la consulta en la conexión abierta y obtener el "resultset" o abortar y mostrar el error
+    $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));
+
+}
+
 if (isset($_GET['idEntrada'])) {
     $idEntrada = $_GET['idEntrada'];
 
@@ -51,8 +71,6 @@ if (isset($_GET['idEntrada'])) {
     $totalComen = mysqli_num_rows($rComen);
 }
 //seguimos mas abajo
-
-
 ?>
 <!-- Barra de navegación -->
 <div class="navbar-wrapper">
@@ -118,23 +136,34 @@ if ($total > 0) {
                 <hr class="divider"> 
                     <h2 class="texto-naranja"> COMENTARIOS</h2>
                 
-                        <div class="col-md-12">';
+            <div class="col-md-12">';
                 while ($filaComen = mysqli_fetch_assoc($rComen)) {
 
                     echo ' 
-                    <hr class="divider">                       
+                            <div class="container">
+                            <div class="col-md-12 text-center">
+                                    <hr class="divider">   
+                    
+                            </div>
+                            </div>
+                                      
                             <h2>' . $filaComen['email'] . ' </h2>
                             <span class="text-muted" class="fecha">' . $filaComen['fecha'] . '</span>       
                             <p>' . $filaComen['texto'] . '</p>
-                       <div class="container">
+            
                 <div class="col-md-12 text-center">
-                    <p><a class="btn btn-lg btn-primary" href="borrarComentarioEntrada.php?borrarComentario=' . $filaComen['id'] . '" role="button">Borrar comentario</a></p>
+                    <p><a class="btn btn-lg btn-primary" href="borrarComentarioEntrada.php?borrarComentario=' . $filaComen['id'] . '&idEntrada='.$idEntrada.'" role="button">Borrar comentario</a></p>
                 </div>
-            </div>
+            
                         ';
                 }
-                echo'
-                            <hr class="divider"> 
+                echo'<div class="container">
+                     <div class="col-md-12 text-center">
+                          <hr class="divider">   
+                    
+                     </div>
+                     </div>
+                            
                         </div>
                 </div>
     </div>';

@@ -171,7 +171,7 @@ if (isset($_POST['enviar'])) {
 
 <div class="container">
     <div class="col-md-12 text-center">
-        <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php" role="button">Borrar entradas</a></p>
+        <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php" role="button">Borrar entradas o comentarios</a></p>
     </div>
 </div>
 
