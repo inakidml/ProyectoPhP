@@ -31,6 +31,13 @@ session_name('login');
 if(@session_start() == false){session_destroy();session_start();}
 $login=false;
 
+if(isset($_GET['logout'])){
+    unset ($SESSION['username']);
+    session_destroy();
+    $_SESSION['loggedin'] = false;
+    header('Location: http://192.168.33.10/ProyectoPHP/Web/login.php');
+}
+
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
     $login=true;
     $now = time();
@@ -38,6 +45,9 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
         session_destroy();
     }
 }
+
+
+
 ?>
 
 <?php
@@ -59,6 +69,9 @@ if (mysqli_num_rows($result) > 0) {
 
     $row = mysqli_fetch_assoc($result);
 
+    echo ' * ' . password_verify($pass, $row['pass']). ' - ';
+    echo $row['user'].' - ';
+    echo $row['pass'];
     if (password_verify($pass, $row['pass'])) {
 
         $_SESSION['loggedin'] = true;
@@ -77,7 +90,7 @@ mysqli_close($conexion);
 }
 ?>
 
-<!-- Barra de navegación
+<!-- Barra de navegación -->
 <div class="navbar-wrapper">
     <div class="container">
         <nav class="navbar navbar-inverse navbar-static-top">
@@ -101,7 +114,7 @@ mysqli_close($conexion);
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li class="active"><a href="blog.php">Ver Blog</a></li><!--Marcado como activo
+                                <li ><a href="blog.php">Ver Blog</a></li><!--Marcado como activo -->
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
                                 <li><a href="entradas.php">Gestión blog</a></li>
@@ -111,8 +124,8 @@ mysqli_close($conexion);
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li<?php if(!$login){echo' hidden';}?><a href="blog.php">Login</a></li>
-                                <li<?php if(!$login){echo' hidden';}?>><a href="entradas.php">Logout</a></li>
+                                <li<?php if($login){echo' hidden';}?> class="active"><a href="blog.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?> class="active"><a href="entradas.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -121,7 +134,7 @@ mysqli_close($conexion);
         </nav>
     </div>
 </div>
--->
+
 <?php
 if(!$login){
 
@@ -130,16 +143,12 @@ echo'
 
 <hr class="featurette-divider" class="divider-oculto">
 
-
 <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
-
         <div class="container">
-
             <h2 class="featurette-heading">User <span class="text-muted">Login</span>
             </h2>
-
             <form action="login.php" method="post" class="form-horizontal">
                 <div class="form-group">
                     <label for="user" class="control-label col-sm-2">Usuario:</label>
@@ -163,7 +172,6 @@ echo'
             </form>
         </div>
     </div>
-
 </div>
 
 <hr class="featurette-divider">
@@ -172,17 +180,21 @@ echo'
     <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
-
         <div class="container">
-            <h2 class="featurette-heading">User <span class="text-muted">Login</span>
+            <h2 class="featurette-heading">Usuario <span class="text-muted">Logeado</span>
             </h2>
+            <hr class="featurette-divider">
         </div>
+        <div class="container">
+                <div class="col-md-12 text-center">
+                    <p><a class="btn btn-lg btn-primary" href="login.php?logout=1" role="button">Logout</a></p>
+                    <hr class="featurette-divider">
+                </div>
+        </div>        
     </div>
 </div>
-            
-            
-            
-            ';
+
+';
 
 }
 ?>

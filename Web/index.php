@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="Proyecto de CSS para la asignatura Lenguaje de marcas">
+    <meta name="description" content="Proyecto de PHP para la asignatura Lenguaje de marcas">
     <meta name="author" content="Iñaki">
     <link rel="icon" href="imagenes/favicon.png">
     <!-- Estilo para botón github -->
@@ -53,7 +53,6 @@
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
                                 <li><a href="entradas.php">Gestión blog</a></li>
-                                <li><a href="#">Añadir usuarios</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -24,6 +24,26 @@
 ================================================== -->
 <body>
 <?php
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../session'));
+session_name('login');
+if(@session_start() == false){session_destroy();session_start();}
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+
+    $login = true;
+
+    $now = time();
+    if($now > $_SESSION['expire']) {
+        session_destroy();
+        $login = false;
+    }
+
+
+} else {
+    $login = false;
+}
+
+?>
+<?php
 // date_default_timezone... es obligatorio si usais PHP 5.3 o superior
 date_default_timezone_set('Europe/Madrid');
 $fecha_actual = date("Y-m-d H:i:s");
@@ -101,7 +121,14 @@ if (isset($_POST['enviar'])) {
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
                                 <li class="active"><a href="entradas.php">Gestión blog</a></li>
-                                <li><a href="#">Añadir usuarios</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li<?php if($login){echo' hidden';}?>><a href="login.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?>><a href="login.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -116,7 +143,8 @@ if (isset($_POST['enviar'])) {
 
 <hr class="featurette-divider" class="divider-oculto">
 
-
+<?php
+if($login){echo'
 <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
@@ -145,7 +173,7 @@ if (isset($_POST['enviar'])) {
                     <label for="fecha" class="control-label col-sm-2">Fecha:</label>
                     <div class="col-sm-10">
                         <input type="text" id="fecha" name="fecha" class="form-control"
-                               value="<?php echo $fecha_actual; ?>"/>
+                               value='.$fecha_actual.'"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -174,6 +202,32 @@ if (isset($_POST['enviar'])) {
         <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php" role="button">Borrar entradas o comentarios</a></p>
     </div>
 </div>
+';}else{
+    echo'
+<div class="row featurette">
+    <div class="col-md-12">
+        <div class="container">
+            <h2 class="featurette-heading">Necesario <span class="text-muted">Login</span>
+            </h2>
+            <hr class="featurette-divider">
+        </div>
+        <div class="container">
+                <div class="col-md-12 text-center">
+                    <p><a class="btn btn-lg btn-primary" href="login.php" role="button">Login</a></p>
+                    <hr class="featurette-divider">
+                </div>
+        </div>        
+    </div>
+</div>
+
+';
+
+
+}
+
+
+
+?>
 
 <hr class="featurette-divider">//divisor de la entrada
 
