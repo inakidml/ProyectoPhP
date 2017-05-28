@@ -60,7 +60,7 @@ $conexion = mysqli_connect("localhost", "root", "root", "blog");
 
 
 // Formar la consulta (seleccionando todas las filas)
-$q = "select * from entrada";
+$q = "select * from entrada order by fecha desc";
 
 // Ejecutar la consulta en la conexión abierta y obtener el "resultset" o abortar y mostrar el error
 $r = mysqli_query($conexion, $q) or die (mysqli_error($conexion));

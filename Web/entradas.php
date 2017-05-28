@@ -173,7 +173,7 @@ if($login){echo'
                     <label for="fecha" class="control-label col-sm-2">Fecha:</label>
                     <div class="col-sm-10">
                         <input type="text" id="fecha" name="fecha" class="form-control"
-                               value='.$fecha_actual.'"/>
+                               value="'.$fecha_actual.'"/>
                     </div>
                 </div>
                 <div class="form-group">
