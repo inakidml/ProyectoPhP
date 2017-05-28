@@ -24,6 +24,28 @@
 <!-- NAVBAR
 ================================================== -->
 <body>
+
+<?php
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../session'));
+session_name('login');
+if(@session_start() == false){session_destroy();session_start();}
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+
+    $login = true;
+
+    $now = time();
+    if($now > $_SESSION['expire']) {
+        session_destroy();
+        $login = false;
+    }
+
+
+} else {
+    $login = false;
+}
+
+?>
+
 <?php
 $pagina = 1;
 if (isset($_GET['pagina'])) {
@@ -89,11 +111,18 @@ $total = mysqli_num_rows($r);
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li class="active"><a href="blog.php">Ver Blog</a></li><!--Marcado como activo -->
+                                <li><a href="blog.php">Ver Blog</a></li><!--Marcado como activo -->
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
-                                <li><a href="entradas.php">Gestión blog</a></li>
-                                <li><a href="#">Añadir usuarios</a></li>
+                                <li class="active"><a href="entradas.php">Gestión blog</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li<?php if($login){echo' hidden';}?>><a href="login.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?>><a href="login.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -111,7 +140,7 @@ $total = mysqli_num_rows($r);
 
 //5 articulos por página
 
-if ($total > 0) {
+if ($total > 0 && $login) {
     $contador = 0;
     while ($fila = mysqli_fetch_assoc($r)) {
 
@@ -192,6 +221,25 @@ if ($total > 0) {
     ';
     }
 
+}else{
+    echo'
+<div class="row featurette">
+    <div class="col-md-12">
+        <div class="container">
+            <h2 class="featurette-heading">Necesario <span class="text-muted">Login</span>
+            </h2>
+            <hr class="featurette-divider">
+        </div>
+        <div class="container">
+                <div class="col-md-12 text-center">
+                    <p><a class="btn btn-lg btn-primary" href="login.php" role="button">Login</a></p>
+                    <hr class="featurette-divider">
+                </div>
+        </div>        
+    </div>
+</div>
+
+';
 }
 // Cerrar la conexión
 mysqli_close($conexion);

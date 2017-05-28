@@ -21,9 +21,26 @@
     <link href="miEstilo.css" rel="stylesheet">
     <link href="miEstiloParrafos.css" rel="stylesheet">
 </head>
-<!-- NAVBAR
-================================================== -->
+
 <body>
+
+<!--Sesión-->
+<?php
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) .'/../session'));
+session_name('login');
+if(@session_start() == false){session_destroy();session_start();}
+$login=false;
+
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+    $login=true;
+$now = time();
+if($now > $_SESSION['expire']) {
+    session_destroy();
+}
+}
+?>
+
+
 <?php
 $pagina = 1;
 if (isset($_GET['pagina'])) {
@@ -55,7 +72,9 @@ $total = mysqli_num_rows($r);
 
 
 ?>
-<!-- Barra de navegación -->
+<!-- NAVBAR
+==================================================
+-->
 <div class="navbar-wrapper">
     <div class="container">
         <nav class="navbar navbar-inverse navbar-static-top">
@@ -83,7 +102,14 @@ $total = mysqli_num_rows($r);
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
                                 <li><a href="entradas.php">Gestión blog</a></li>
-                                <li><a href="#">Añadir usuarios</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li<?php if($login){echo' hidden';}?>><a href="login.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?>><a href="login.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>

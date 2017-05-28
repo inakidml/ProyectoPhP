@@ -19,87 +19,84 @@
     <!-- Custom styles for this template -->
     <link href="carousel.css" rel="stylesheet">
     <link href="miEstilo.css" rel="stylesheet">
+    <link href="miEstiloParrafos.css" rel="stylesheet">
 </head>
-<!-- NAVBAR
-================================================== -->
+
 <body>
+
+<!--Sesión-->
 <?php
-ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) . '/../session'));
+ini_set('session.save_path',realpath(dirname($_SERVER['DOCUMENT_ROOT']) .'/../session'));
 session_name('login');
 if(@session_start() == false){session_destroy();session_start();}
+$login=false;
+
+if(isset($_GET['logout'])){
+    unset ($SESSION['username']);
+    session_destroy();
+    $_SESSION['loggedin'] = false;
+    header('Location: http://192.168.33.10/ProyectoPHP/Web/login.php');
+}
+
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-
-    $login = true;
-
+    $login=true;
     $now = time();
     if($now > $_SESSION['expire']) {
         session_destroy();
-        $login = false;
     }
-
-
-} else {
-    $login = false;
 }
 
+
+
 ?>
+
 <?php
-// date_default_timezone... es obligatorio si usais PHP 5.3 o superior
-date_default_timezone_set('Europe/Madrid');
-$fecha_actual = date("Y-m-d H:i:s");
+if(isset($_POST['user']) && isset($_POST['pass'])){
+$host_db = "localhost";
+$user_db = "root";
+$pass_db = "root";
+$db_name = "blog";
+$tbl_name = "users";
+$conexion = mysqli_connect($host_db, $user_db, $pass_db, $db_name);
+if ($conexion->connect_error) {
+    die("La conexion falló: " . $conexion->connect_error);
+}
+$user = $_POST['user'];
+$pass = $_POST['pass'];
+$sql = "SELECT * FROM $tbl_name WHERE user = '$user'";
+$result = mysqli_query($conexion, $sql);
+if (mysqli_num_rows($result) > 0) {
 
-if (isset($_POST['enviar'])) {
+    $row = mysqli_fetch_assoc($result);
 
-// Recoger los valores
-    $titulo = "";
-    if (isset($_POST['titulo']))
-        $titulo = $_POST['titulo'];
+    echo ' * ' . password_verify($pass, $row['pass']). ' - ';
+    echo $row['user'].' - ';
+    echo $row['pass'];
+    if (password_verify($pass, $row['pass'])) {
 
-    $texto = "";
-    if (isset($_POST['texto']))
-        $texto = $_POST['texto'];
+        $_SESSION['loggedin'] = true;
+        $_SESSION['user'] = $user;
+        $_SESSION['start'] = time();
+        $_SESSION['expire'] = $_SESSION['start'] + (5 * 60);
+        $login = true;
 
-    $fecha = $fecha_actual;
-    if (isset($_POST['fecha']) && $_POST['fecha'] != "")
-        $fecha = $_POST['fecha'];
-
-    $activo = 0;
-    if (isset($_POST['activo']))
-        $activo = 1;
-
-
-// Abrir la conexión
-    $conexion = mysqli_connect("localhost", "root", "root", "blog");
-
-// Formar la consulta (insertar una fila)
-
-    /*
-      Escribir la consulta
-
-        $q = "insert into entrada values( 0, '', '', '', '' )";
-
-      Cortar en los puntos en los que queremos introducir variables con ".."
-
-        $q = "insert into entrada values( 0, '".$titulo."', '".$texto."', '".$fecha."', '".$activo."' )";
-    */
-
-    $q = "insert into entrada values ( 0,'" . $titulo . "','" . $texto . "','" . $fecha . "','" . $activo . "' )";
-
-
-    // Ejecutar la consulta en la conexión abierta. No hay "resultset"
-    mysqli_query($conexion, $q) or die(mysqli_error($conexion));
-
-// Cerrar la conexión
-    mysqli_close($conexion);
+    } else {
+        echo "Password incorrecto.";
+    }
+} else {
+    echo "Usuario incorrecto.";
+}
+mysqli_close($conexion);
 }
 ?>
+
 <!-- Barra de navegación -->
 <div class="navbar-wrapper">
     <div class="container">
         <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-tarPOST="#navbar"
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                             aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
@@ -110,25 +107,25 @@ if (isset($_POST['enviar'])) {
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="index.php">Home</a></li><!--Marcado como activo -->
+                        <li><a href="index.php">Home</a></li>
                         <li><a href="#about">Acerca de</a></li>
                         <li><a href="https://github.com/inakidml/ProyectoPhP">GitHub</a></li>
                         <li class="dropdown">
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li ><a href="blog.php">Ver Blog</a></li>
+                                <li ><a href="blog.php">Ver Blog</a></li><!--Marcado como activo -->
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
-                                <li class="active"><a href="entradas.php">Gestión blog</a></li>
+                                <li><a href="entradas.php">Gestión blog</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li<?php if($login){echo' hidden';}?>><a href="login.php">Login</a></li>
-                                <li<?php if(!$login){echo' hidden';}?>><a href="login.php">Logout</a></li>
+                                <li<?php if($login){echo' hidden';}?> class="active"><a href="blog.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?> class="active"><a href="entradas.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -138,82 +135,59 @@ if (isset($_POST['enviar'])) {
     </div>
 </div>
 
+<?php
+if(!$login){
 
+echo'
 <!-- FEATURETTES -->
 
 <hr class="featurette-divider" class="divider-oculto">
 
-<?php
-if($login){echo'
 <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
-
         <div class="container">
-
-            <h2 class="featurette-heading">Añadir entrada <span class="text-muted">al Blog</span>
+            <h2 class="featurette-heading">User <span class="text-muted">Login</span>
             </h2>
-
-            <form action="entradas.php" method="post" class="form-horizontal">
+            <form action="login.php" method="post" class="form-horizontal">
                 <div class="form-group">
-                    <label for="titulo" class="control-label col-sm-2">Título:</label>
+                    <label for="user" class="control-label col-sm-2">Usuario:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="titulo" name="titulo" class="form-control" class="form-horizontal"
+                        <input type="text" id="user" name="user" class="form-control" class="form-horizontal"
                                value=""/>
-
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="texto" class="control-label col-sm-2">Texto:</label>
+                    <label for="pass" class="control-label col-sm-2">Contraseña:</label>
                     <div class="col-sm-10">
-                        <textarea id="texto" name="texto" rows="4" cols="40" maxlength="2000" placeholder="max: 2000dig" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="fecha" class="control-label col-sm-2">Fecha:</label>
-                    <div class="col-sm-10">
-                        <input type="text" id="fecha" name="fecha" class="form-control"
-                               value='.$fecha_actual.'"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="activo" class="control-label col-sm-2">Activo:</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" id="activo" name="activo" checked="checked" class="form-control"/>
+                        <input type="password" id="pass" name="pass" class="form-control" class="form-horizontal"
+                               value=""/>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                    <input type="reset" id="limpiar" name="limpiar" value="Limpiar" class="btn btn-default" class="form-inline"/>
-                    <input type="submit" id="enviar" name="enviar" value="Guardar" class="btn btn-default" class="form-inline"/>
-                </div>
+                        <input type="submit" id="login" name="login" value="Login" class="btn btn-default" class="form-inline"/>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
-
 </div>
 
 <hr class="featurette-divider">
-
-
-<div class="container">
-    <div class="col-md-12 text-center">
-        <p><a class="btn btn-lg btn-primary" href="borrarEntradas.php" role="button">Borrar entradas o comentarios</a></p>
-    </div>
-</div>
-';}else{
-    echo'
+';
+}else{echo'
+    <a name="form entrada"></a>
 <div class="row featurette">
     <div class="col-md-12">
         <div class="container">
-            <h2 class="featurette-heading">Necesario <span class="text-muted">Login</span>
+            <h2 class="featurette-heading">Usuario <span class="text-muted">Logeado</span>
             </h2>
             <hr class="featurette-divider">
         </div>
         <div class="container">
                 <div class="col-md-12 text-center">
-                    <p><a class="btn btn-lg btn-primary" href="login.php" role="button">Login</a></p>
+                    <p><a class="btn btn-lg btn-primary" href="login.php?logout=1" role="button">Logout</a></p>
                     <hr class="featurette-divider">
                 </div>
         </div>        
@@ -222,14 +196,9 @@ if($login){echo'
 
 ';
 
-
 }
-
-
-
 ?>
 
-<hr class="featurette-divider">//divisor de la entrada
 
 <!-- /Fin de las FEATURETTES -->
 
