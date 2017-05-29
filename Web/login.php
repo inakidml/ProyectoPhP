@@ -69,9 +69,6 @@ if (mysqli_num_rows($result) > 0) {
 
     $row = mysqli_fetch_assoc($result);
 
-    echo ' * ' . password_verify($pass, $row['pass']). ' - ';
-    echo $row['user'].' - ';
-    echo $row['pass'];
     if (password_verify($pass, $row['pass'])) {
 
         $_SESSION['loggedin'] = true;
@@ -124,8 +121,8 @@ mysqli_close($conexion);
                             <a class="active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Usuarios<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li<?php if($login){echo' hidden';}?> class="active"><a href="blog.php">Login</a></li>
-                                <li<?php if(!$login){echo' hidden';}?> class="active"><a href="entradas.php">Logout</a></li>
+                                <li<?php if($login){echo' hidden';}?> class="active"><a href="login.php">Login</a></li>
+                                <li<?php if(!$login){echo' hidden';}?> class="active"><a href="login.php">Logout</a></li>
                             </ul>
                         </li>
                     </ul>

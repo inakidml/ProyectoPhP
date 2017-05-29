@@ -82,7 +82,6 @@ if (isset($_GET['idEntrada'])) {
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">Administrador</li>
                                 <li><a href="entradas.php">Gestión blog</a></li>
-                                <li><a href="#">Añadir usuarios</a></li>
                             </ul>
                         </li>
                     </ul>
