@@ -1,5 +1,3 @@
-select * from blog.comentario;
-select * from blog.entrada;
 
 drop table users;
 
@@ -10,11 +8,6 @@ pass VARCHAR(70)not null
 
 desc users;
 
-insert into blog.users values(0,'admin', '000000');
-
 select * from users;
-delete from users where id=2;
-commit;
 
-ALTER TABLE users
-MODIFY COLUMN pass varchar(70); 
+commit;
